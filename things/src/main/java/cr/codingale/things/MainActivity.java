@@ -29,12 +29,15 @@ public class MainActivity extends Activity {
     private static final String SERVICE_ID = "com.example.mipaquete";
     private static final String TAG = "Things:";
     private final String PIN_LED = "BCM18";
+
+    private WifiUtils wifiutils;
     public Gpio mLedGpio;
     private Boolean ledStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wifiutils = new WifiUtils(this);
         // Configuración del LED
         ledStatus = false;
         PeripheralManager service = PeripheralManager.getInstance();
@@ -116,7 +119,7 @@ public class MainActivity extends Activity {
             disconnect(endpointId);
             switch (message) {
                 case "SWITCH":
-                    switchLED();
+                    doRemoteAction();
                     break;
                 default:
                     Log.w(TAG, "No existe una acción asociada a este " +
@@ -131,6 +134,12 @@ public class MainActivity extends Activity {
             // Actualizaciones sobre el proceso de transferencia
         }
     };
+
+    public void doRemoteAction() {
+        wifiutils.connectToAP("Home", "12345678");
+        wifiutils.listNetworks();
+        wifiutils.getConnectionInfo();
+    }
 
     public void switchLED() {
         try {
